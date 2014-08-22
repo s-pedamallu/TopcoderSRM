@@ -10,14 +10,24 @@ import java.io.InputStreamReader;
 public class DoubleLetter {
 
     public String ableToSolve(String src) {
-        boolean modified = true;
-        while (modified) {
+
+        // declare a boolean variable to determine if src has been modified in the last iteration
+        boolean isModified = true;
+
+        // Iterate if the src has been modified
+        while (isModified) {
+            // variable to store modified src
             StringBuffer newStr = new StringBuffer();
-            modified = false;
+            isModified = false;
+
+            // At every character, if the src is not yet modified,
+            // then check if the current character is same as the next character:
+            // if yes, skip copying this character
+            // else, copy this character to the newStr
             for (int i=0; i<src.length(); i++){
-                if(!modified && i+1<src.length() && src.charAt(i)==src.charAt(i+1)) {
+                if(!isModified && i+1<src.length() && src.charAt(i)==src.charAt(i+1)) {
                     i++;
-                    modified = true;
+                    isModified = true;
                     continue;
                 }else {
                     newStr.append(src.charAt(i));
