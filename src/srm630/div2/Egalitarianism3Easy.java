@@ -3,9 +3,12 @@ package srm630.div2;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashSet;
 
 /**
  * Created by shashank on 8/21/14.
+ *
+ * This code is influenced from the solution posted in the SRM Match Editorials of www.topcoder.com
  */
 public class Egalitarianism3Easy {
     private int[][] allDistances;
@@ -14,12 +17,16 @@ public class Egalitarianism3Easy {
 
     public int maxCities(int numCities, int[] src, int[] dest, int[] len) {
 
+        if (numCities<3) {
+            return numCities;
+        }
         String[] tree = buildTree(numCities,src,dest,len);
         computeAllDistances(tree);
-        return 0;
+        return computeMaxSubset(numCities);
     }
 
-    public String[] buildTree (int size, int[] src, int[] dest, int[] len) {
+    // Build Adjacency List
+    private String[] buildTree (int size, int[] src, int[] dest, int[] len) {
         String[] tree = new String[size];
         for (int i=0; i<size; i++) {
             tree[i]= new String();
@@ -33,7 +40,8 @@ public class Egalitarianism3Easy {
         return tree;
     }
 
-    public void computeAllDistances(String[] tree) {
+    // Perfrom DFS repetitively
+    private void computeAllDistances(String[] tree) {
         allDistances = new int[tree.length][tree.length];
         visited = new boolean[tree.length];
         for (int i=0; i<tree.length; i++){
@@ -45,7 +53,8 @@ public class Egalitarianism3Easy {
         }
     }
 
-    public void performDFS(int node, int cumulativeDistance, String[] tree) {
+    // Perform DFS
+    private void performDFS(int node, int cumulativeDistance, String[] tree) {
         visited[node] = true;
         allDistances[currentNode][node] = cumulativeDistance;
         if(node!=currentNode) {
@@ -62,6 +71,43 @@ public class Egalitarianism3Easy {
         }
     }
 
+    // Compute the maximum subset of cities with equal mutual distances
+    private int computeMaxSubset(int num) {
+        int ans = 0; // keeps track of the end result
+
+        // loop for all possible subsets
+        for (int subsetId = 0; subsetId < (1<<num); subsetId++) {
+            int dis = -1; // keeps track of current subset distance
+            HashSet<Integer> subset = new HashSet<Integer>(); // keeps track of  cities in this subset
+            boolean isSameDistance = true; // keeps track if all the distances in this subset are of same distance
+
+            // loop through all of the valid portion of allDistances matrix (i.e., all elements above principal diagonal)
+            for (int i=0; i < num; i++) {
+                // to check if this particular subset takes i into consideration
+                if ((subsetId & (1<<i)) > 0) {
+                    subset.add(i);
+                    for (int j=i+1; j<num; j++) {
+                        // to check if this particular subset takes j into consideration
+                        if ((subsetId & (1<<j)) > 0) {
+                            subset.add(j);
+                            if(dis==-1) {
+                                dis = allDistances[i][j];
+                            }
+                            else if(allDistances[i][j] != dis) {
+                                isSameDistance = false;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (isSameDistance) {
+                ans = Math.max(ans, subset.size());
+            }
+
+        }
+        return ans;
+    }
 
     // For debugging
     public static void main(String[] args) throws IOException {
