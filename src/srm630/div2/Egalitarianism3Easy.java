@@ -77,16 +77,32 @@ public class Egalitarianism3Easy {
 
         // loop for all possible subsets
         for (int subsetId = 0; subsetId < (1<<num); subsetId++) {
+
+            // An unsure optimization
+            int numCitiesConsidered = 0;
+            for(int x=0; x<10; x++){
+                int bit = 1<<x;
+                if (bit > subsetId){
+                    break;
+                }
+                if ((subsetId & bit)>0){
+                    numCitiesConsidered++;
+                }
+            }
+            if(numCitiesConsidered <= ans) {
+                continue;
+            }
+
             int dis = -1; // keeps track of current subset distance
             HashSet<Integer> subset = new HashSet<Integer>(); // keeps track of  cities in this subset
             boolean isSameDistance = true; // keeps track if all the distances in this subset are of same distance
 
             // loop through all of the valid portion of allDistances matrix (i.e., all elements above principal diagonal)
-            for (int i=0; i < num; i++) {
+            for (int i=0; i < num && isSameDistance; i++) {
                 // to check if this particular subset takes i into consideration
                 if ((subsetId & (1<<i)) > 0) {
                     subset.add(i);
-                    for (int j=i+1; j<num; j++) {
+                    for (int j=i+1; j<num && isSameDistance; j++) {
                         // to check if this particular subset takes j into consideration
                         if ((subsetId & (1<<j)) > 0) {
                             subset.add(j);
