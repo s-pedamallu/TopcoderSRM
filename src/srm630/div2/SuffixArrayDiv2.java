@@ -15,7 +15,6 @@ public class SuffixArrayDiv2 {
         HashMap<String, Integer> suffixMap = new HashMap<String, Integer>();
         String[] suffixes = getAllSuffixes(ref, suffixMap);
         int[] suffixArray = getSuffixArray(suffixes, suffixMap);
-        //String base = getBase(suffixes);
         boolean result = checkSmallerString(ref, suffixArray, suffixes, suffixMap);
         if(result) {
             System.out.println("Smaller string with same suffix array is: "+newString);
@@ -75,18 +74,6 @@ public class SuffixArrayDiv2 {
             }
         }
         return true;
-    }
-
-    private String getBase(String[] suffixes) {
-        for (int i=0; i<suffixes.length; i++) {
-            String base = suffixes[i];
-            for(int j=0; j<base.length(); j++){
-                if(base.charAt(j)!='a'){
-                    return base;
-                }
-            }
-        }
-        return null;
     }
 
     // For debugging
