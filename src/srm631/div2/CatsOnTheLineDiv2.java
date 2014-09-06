@@ -10,9 +10,8 @@ import java.util.HashMap;
  * Created by shashank on 9/6/14.
  */
 public class CatsOnTheLineDiv2 {
-    private int min[], max[];
     public String getAnswer(int[] pos, int[] count, int time) {
-        arrangeInProperOrder(pos,count, time);
+        arrangeInProperOrder(pos,count);
         boolean res = checkPossibility(pos, count, time);
         if(res) {
             return "Possible";
@@ -21,41 +20,34 @@ public class CatsOnTheLineDiv2 {
         }
     }
 
-    private void arrangeInProperOrder(int[] pos, int[] count, int time) {
+    private void arrangeInProperOrder(int[] pos, int[] count) {
         HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
-        min = new int[pos.length];
-        max = new int[pos.length];
         for(int i=0; i<pos.length; i++){
             map.put(pos[i],count[i]);
         }
         Arrays.sort(pos);
         for(int i=0; i<pos.length; i++){
             count[i] = map.get(pos[i]);
-            min[i] = pos[i]-2*time;
-            max[i] = pos[i]+2*time;
         }
     }
 
+
     private boolean checkPossibility(int[] pos, int[] count, int time){
-        int reachablePositions,catsHere;
-        for (int i = 0; i < pos.length; i++) {
-            reachablePositions = (time * 2 + 1);
-            if(reachablePositions<count[i]){
-                return false;
-            }
-            catsHere = count[i];
-            int currentMin=pos[i], currentMax=pos[i];
-            for(int j=1; i-j>=0 && pos[i-j]>=min[i]; j++){
-                catsHere+=count[i-j];
-                currentMin = pos[i-j];
-            }
-            for(int j=1; i+j<pos.length && pos[i+j]<=max[i]; j++){
-                catsHere+=count[i+j];
-                currentMax = pos[i+j];
-            }
-            reachablePositions = (time * 2 + 1)+(currentMax-currentMin);
-            if (reachablePositions < catsHere){
-                return false;
+        int nextFreePos = Integer.MIN_VALUE;
+        for(int i=0; i<pos.length; i++){
+            int leftMost = pos[i]-time;
+            if(leftMost>=nextFreePos) {
+                int excess = count[i]-time;
+                if(excess > time+1){
+                    return false;
+                }else {
+                    nextFreePos = pos[i]+excess;
+                }
+            }else{
+                nextFreePos += count[i];
+                if(nextFreePos-pos[i]-1>time){
+                    return false;
+                }
             }
         }
         return true;
