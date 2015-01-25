@@ -5,31 +5,48 @@ import java.util.HashMap;
 
 public class ConnectingCars {
 	
+	private class Car implements Comparable<Car>{		
+		int from;
+		int to;
+		int length;
+		
+		public Car(int f, int l) {			
+			this.from = f;
+			this.to = f+l;
+			this.length = l;
+		}
+
+		@Override
+		public int compareTo(Car o) {
+			return this.from<o.from ? -1 : 1;			
+		}
+				
+	}
+	
 	public long minimizeCost(int[] positions, int[] lengths)
 	{
-		HashMap<Integer,Integer> lMap = new HashMap<Integer,Integer>();		
+		Car[] cars = new Car[positions.length];		
 		for (int i=0; i<positions.length; i++){
-			lMap.put(positions[i],lengths[i]);			
+			cars[i] = new Car(positions[i], lengths[i]);		
 		}
-		Arrays.sort(positions);
+		Arrays.sort(cars);
 		
-		long energy = Long.MAX_VALUE;
+		long minEnergy = Long.MAX_VALUE;
 		for (int i=0; i<positions.length; i++) {
-			int curPos = positions[i];
+			int curPos = cars[i].from;
 			long tempEnergy = 0L;
-			for(int j=i-1; j>-1; j--) {
-				int diff = curPos-(positions[j]+lMap.get(positions[j]));
-				tempEnergy += diff;
-				curPos=positions[j]+diff;
+			for(int j=i-1; j>-1; j--) {				
+				tempEnergy += curPos-cars[j].to;				
+				curPos-=cars[j].length;
 			}
-			curPos = curPos+lMap.get(positions[i]);
+			curPos = cars[i].to;
 			for(int j=i+1; j<positions.length; j++){								
-				tempEnergy += (positions[j]-curPos);
-				curPos += lMap.get(positions[j]);				
+				tempEnergy += cars[j].from - curPos;
+				curPos += cars[j].length;				
 			}
-			energy = Math.min(energy, tempEnergy);
+			minEnergy = Math.min(minEnergy, tempEnergy);
 		}
-		return energy;
+		return minEnergy;
 	}
 	
 	public static void main(String[] args)
